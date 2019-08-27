@@ -1,0 +1,7 @@
+class Message {
+
+	static text := { W001: "Line contains trailing spaces. (W001)"
+			, W002: "Line too long. (W002)"
+			, W003: "Wrong indentation for splitted long line. (W003)"
+			, W004: "Missing opening curly bracket. (W004)" }
+}
