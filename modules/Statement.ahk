@@ -2,20 +2,17 @@ class Statement extends Line {
 
 	static lineNumber := 0
 	static lines := []
-	static comment := ""
 
-	addLine(sourceLine, lineNumber, comment) {
+	addLine(sourceLine, lineNumber) {
 		if (Statement.lines.maxIndex() == "") {
 			Statement.lineNumber := lineNumber
 		}
 		if (Statement.isContiousLine(sourceLine)) {
 			Statement.lines.push(sourceLine)
 		} else {
-			Line.comment := Statement.comment
 			Statement.check()
 			Statement.lineNumber := lineNumber
 			Statement.lines := [sourceLine]
-			Statement.comment := comment
 		}
 	}
 
@@ -30,6 +27,7 @@ class Statement extends Line {
 	check() {
 		Statement.checkIndentOfSplittedLines()
 		Statement.checkOpeningTrueBrace()
+		Statement.checkOptionalArguments()
 	}
 
 	checkIndentOfSplittedLines() {
@@ -66,6 +64,21 @@ class Statement extends Line {
 			}
 		}
 		return true
+	}
+
+	checkOptionalArguments() {
+		sourceLine := Statement.toString()
+		if (RegExMatch(sourceLine, "i)^\s*[a-z0-9_$#@]+\(.+?\)\s+\{")) {
+			at := 1
+			loop {
+				at := RegExMatch(sourceLine, "(\s+=)|(=\s+)"
+						, assignmentWithSpaces, at)
+				if (at > 0) {
+					writeWarning(Statement.lineNumber, at, "W006")
+					at += StrLen(assignmentWithSpaces)
+				}
+			} until (at == 0)
+		}
 	}
 
 	toString() {

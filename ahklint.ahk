@@ -48,10 +48,24 @@ isWithinCommentBlock(sourceLine) {
 }
 
 handleIgnoreDirectives(sourceLine, lineNumber) {
-	if (RegExMatch(sourceLine
+	static rulesToIgnoreBlock := ""
+	maskedSourceLine := Line.maskQuotedText(sourceLine)
+	if (RegExMatch(maskedSourceLine
 			, "\s*`;.*?ahklint-ignore:\s*(?P<ToIgnore>([IWE]\d{3}(,|\s|$))*)"
 			, rules)) {
 		Options.rulesToIgnore[lineNumber] := rulesToIgnore
+	}
+	if (RegExMatch(maskedSourceLine
+			, "\s*`;.*?ahklint-ignore-begin:\s*"
+			. "(?P<ToIgnore>([IWE]\d{3}(,|\s|$))*)"
+			, rules)) {
+		rulesToIgnoreBlock := rulesToIgnore
+	}
+	if (RegExMatch(maskedSourceLine, "\s*`;.*?ahklint-ignore-end")) {
+		rulesToIgnoreBlock := ""
+	}
+	if (rulesToIgnoreBlock != "") {
+		Options.rulesToIgnore[lineNumber] := rulesToIgnoreBlock
 	}
 }
 

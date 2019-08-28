@@ -151,6 +151,22 @@ class AHKLintTest extends TestCase {
 				, "11.15: warning: " Message.text["W004"] "`n")
 	}
 
+	@Test_checkOpeningTrueBraceWithTabs() {
+		Line.addLine("	if (x == 0) {", 1)
+		Line.addLine("		x++", 2)
+		Line.addLine("	}", 3)
+		Line.addLine("	if (x == 0)", 11)
+		Line.addLine("		x++", 12)
+		Line.addLine("	if (x == 0)", 21)
+		Line.addLine("	{", 22)
+		Line.addLine("		x++", 23)
+		Line.addLine("	}", 24)
+		Statement.check()
+		Ansi.flush()
+		this.assertEquals(TestCase.fileContent(A_Temp "\ahklint-test.err")
+				, "11.13: warning: " Message.text["W004"] "`n")
+	}
+
 	@Test_traditionalStatements() {
 		Line.addLine("    if x is integer", 1)
 		Line.addLine("        x++", 2)
@@ -173,6 +189,18 @@ class AHKLintTest extends TestCase {
 		Line.check()
 		Ansi.flush()
 		this.assertEquals(TestCase.fileContent(A_Temp "\ahklint-test.err"), "")
+	}
+
+	@Test_checkOptionalArguments() {
+		Line.addLine("    test(a = 1, b= 2, c =3, d=4) {", 1)
+		Line.addLine("        a++", 2)
+		Line.addLine("    }")
+		Line.check()
+		Ansi.flush()
+		this.assertEquals(TestCase.fileContent(A_Temp "\ahklint-test.err")
+				, "1.11: warning: " Message.text["W006"] "`n"
+				. "1.18: warning: " Message.text["W006"] "`n"
+				. "1.24: warning: " Message.text["W006"] "`n")
 	}
 }
 

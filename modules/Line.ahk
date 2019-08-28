@@ -2,14 +2,13 @@ class Line {
 
 	static sourceLine := ""
 	static lineNumber := 0
-	static comment := ""
 
 	addLine(sourceLine, lineNumber) {
 		Line.check()
 		lineWithExpandedTabs := Line.expandTabs(sourceLine)
 		Line.sourceLine := Line.stripComment(lineWithExpandedTabs)
 		Line.lineNumber := lineNumber
-		Statement.addLine(Line.sourceLine, Line.lineNumber, Line.comment)
+		Statement.addLine(Line.sourceLine, Line.lineNumber)
 	}
 
 	expandTabs(sourceLine) {
@@ -20,11 +19,9 @@ class Line {
 		stringWithMaskedQuotes := Line.maskQuotedText(sourceLine)
 		commentAt := RegExMatch(stringWithMaskedQuotes, "\s+?`;.*$")
 		if (commentAt > 0) {
-			Line.comment := SubStr(stringWithMaskedQuotes, commentAt)
 			sourceLineWithoutComment := SubStr(stringWithMaskedQuotes
 					, 1, commentAt - 1)
 		} else {
-			Line.comment := ""
 			sourceLineWithoutComment := stringWithMaskedQuotes
 		}
 		return sourceLineWithoutComment
