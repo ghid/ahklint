@@ -2,47 +2,51 @@ class Statement extends Line {
 
 	static lineNumber := 0
 	static lines := []
-	static tabSize := 4
+	static comment := ""
 
-	addLine(sourceLine, lineNumber) {
-		lineWithOutComments := Statement.stripComment(sourceLine)
-		if (this.lines.maxIndex() == "") {
+	addLine(sourceLine, lineNumber, comment) {
+		if (Statement.lines.maxIndex() == "") {
 			Statement.lineNumber := lineNumber
 		}
-		if (Statement.isContiousLine(lineWithOutComments)) {
-			this.lines.push(lineWithOutComments)
+		if (Statement.isContiousLine(sourceLine)) {
+			Statement.lines.push(sourceLine)
 		} else {
+			Line.comment := Statement.comment
 			Statement.check()
 			Statement.lineNumber := lineNumber
-			this.lines := [lineWithOutComments]
+			Statement.lines := [sourceLine]
+			Statement.comment := comment
 		}
 	}
 
 	isContiousLine(sourceLine) {
-		if RegExMatch(sourceLine, "^\s*[-,.+*/?:=!<>|&^~{]|\b(and|or|not).+") {
+		if RegExMatch(sourceLine
+				, "^\s*([-,.+*\/?:=!<>|&^~{])|^\s*(\b(and|or|not)\b)") {
 			return true
 		}
 		return false
 	}
 
 	check() {
-		Statement.checkInnerIndentation()
-		Statement.checkTrueBrace()
+		Statement.checkIndentOfSplittedLines()
+		Statement.checkOpeningTrueBrace()
 	}
 
-	checkInnerIndentation() {
+	checkIndentOfSplittedLines() {
 		numberOfMisindentedLines := 0
 		if (Statement.lines.maxIndex() > 1) {
 			RegExMatch(Statement.lines[1], "^(?P<FirstLine>\s*?)\S.*"
 					, indentationOf)
 			loop % Statement.lines.maxIndex() - 1 {
+				furtherIndent := " ".repeat(Options.tabSize * 2)
 				RegExMatch(Statement.lines[A_Index + 1]
-						, "^(?P<FurtherLine>\s*?)(\S.*|$)", indentationOf)
-				if (indentationOfFurtherLine != indentationOfFirstLine
-						. " ".repeat(Statement.tabSize * 2)) {
+						, "^(?P<FurtherLine>\s*?\{?)(\S.*|$)", indentationOf)
+				expectedIndentOrCurlyBrace := "^" indentationOfFirstLine
+						. "(\{|" furtherIndent ")(\S|$)"
+				if (!RegExMatch(indentationOfFurtherLine
+						, expectedIndentOrCurlyBrace)) {
 					writeWarning(Statement.lineNumber + A_Index
-							. "." StrLen(indentationOfFurtherLine)
-							, Message.text["W003"])
+							, StrLen(indentationOfFurtherLine), "W003")
 					numberOfMisindentedLines++
 				}
 			}
@@ -50,13 +54,14 @@ class Statement extends Line {
 		return numberOfMisindentedLines == 0
 	}
 
-	checkTrueBrace() {
+	checkOpeningTrueBrace() {
 		sourceLine := Statement.toString()
 		if (RegExMatch(sourceLine
-				, "i)\s*(\}\s*)?\b(if|while|loop|for|else|try|catch|finally)"
+				, "i)\s*(\}\s*)?\b(if|while|loop|for|else|try|catch|finally)\b"
 				, $)) {
 			if (!RegExMatch(sourceLine, "\{\s*?$")) {
-				writeWarning(Statement.lineNumber ".0", Message.text["W004"])
+				writeWarning(Statement.lineNumber, StrLen(sourceLine)
+						, "W004")
 				return false
 			}
 		}

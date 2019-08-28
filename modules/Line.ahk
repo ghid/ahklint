@@ -3,24 +3,30 @@ class Line {
 	static sourceLine := ""
 	static lineNumber := 0
 	static comment := ""
-	static tabSize := 4
 
 	addLine(sourceLine, lineNumber) {
+		Line.check()
 		lineWithExpandedTabs := Line.expandTabs(sourceLine)
 		Line.sourceLine := Line.stripComment(lineWithExpandedTabs)
 		Line.lineNumber := lineNumber
-		Statement.addLine(Line.sourceLine, Line.lineNumber)
+		Statement.addLine(Line.sourceLine, Line.lineNumber, Line.comment)
 	}
 
 	expandTabs(sourceLine) {
-		return RegExReplace(sourceLine, "\t", " ".repeat(Line.tabSize))
+		return RegExReplace(sourceLine, "\t", " ".repeat(Options.tabSize))
 	}
 
 	stripComment(sourceLine) {
 		stringWithMaskedQuotes := Line.maskQuotedText(sourceLine)
-		sourceLineWithoutComment := (stringWithMaskedQuotes
-				, "\s*?`;(.*$)", "", $)
-		Line.comment := $1
+		commentAt := RegExMatch(stringWithMaskedQuotes, "\s+?`;.*$")
+		if (commentAt > 0) {
+			Line.comment := SubStr(stringWithMaskedQuotes, commentAt)
+			sourceLineWithoutComment := SubStr(stringWithMaskedQuotes
+					, 1, commentAt - 1)
+		} else {
+			Line.comment := ""
+			sourceLineWithoutComment := stringWithMaskedQuotes
+		}
 		return sourceLineWithoutComment
 	}
 
@@ -34,18 +40,29 @@ class Line {
 	check() {
 		Line.checkLineForTrailingSpaces()
 		Line.checkLineTooLong()
+		Line.checkNotEqualSymbol()
 	}
 
 	checkLineForTrailingSpaces() {
-		if (pos := RegExMatch(Line.sourceLine, "\s+$") > 0) {
-			writeWarning(Line.lineNumber "." pos, Message.text["W001"])
+		at := RegExMatch(Line.sourceLine, "\s+$")
+		if (at > 0) {
+			writeWarning(Line.lineNumber, at, "W001")
 		}
 	}
 
 	checkLineTooLong() {
 		lineLength := StrLen(Line.sourceLine)
 		if (lineLength > 80) {
-			writeWarning(Line.lineNumber "." lineLength, Message.text["W002"])
+			writeWarning(Line.lineNumber, lineLength, "W002")
 		}
+	}
+
+	checkNotEqualSymbol() {
+		loop {
+			at := InStr(Line.sourceLine, "<>",,, A_Index)
+			if (at > 0) {
+				writeWarning(Line.lineNumber, at, "W005")
+			}
+		} until (at == 0)
 	}
 }
