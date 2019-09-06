@@ -1,8 +1,10 @@
 ; ahk: console
 #NoEnv
+ListLines Off
+SetBatchLines -1
 
-#Include <ansi\ansi>
-#Include <string\string>
+#Include <ansi\Ansi>
+#Include <string\String>
 
 #Include %A_LineFile%\..\modules\Line.ahk
 #Include %A_LineFile%\..\modules\Statement.ahk
@@ -12,13 +14,13 @@ class Options {
 
 	static tabSize := 4
 	static rulesToIgnore := {}
+
 }
 
 Main:
-	Ansi.NO_BUFFER := true
 	try {
 		f := Ansi.stdIn
-		while (!f.AtEOF) {
+		while (!f.atEOF) {
 			sourceLine := RegExReplace(f.readLine(), "[`r`n]+$", "")
 			if (!isWithinCommentBlock(sourceLine)) {
 				Line.addLine(sourceLine, A_Index)
@@ -49,6 +51,9 @@ isWithinCommentBlock(sourceLine) {
 
 handleIgnoreDirectives(sourceLine, lineNumber) {
 	static rulesToIgnoreBlock := ""
+	if (!InStr(sourceLine, "ahklint-") && rulesToIgnoreBlock == "") {
+		return
+	}
 	maskedSourceLine := Line.maskQuotedText(sourceLine)
 	if (RegExMatch(maskedSourceLine
 			, "\s*`;.*?ahklint-ignore:\s*(?P<ToIgnore>([IWE]\d{3}(,|\s|$))*)"
@@ -75,9 +80,7 @@ isTheMessageToBeIgnored(messageId, lineNumber) {
 }
 
 writeWarning(lineNumber, columnNumber, messageId) {
-	if (isTheMessageToBeIgnored(messageId, lineNumber)) {
-		OutputDebug % "Ignore: " Line.sourceLine
-	} else {
+	if (!isTheMessageToBeIgnored(messageId, lineNumber)) {
 		Ansi.stdErr.writeLine(lineNumber "." columnNumber
 				. ": warning: " Message.text[messageId])
 	}

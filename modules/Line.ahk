@@ -5,14 +5,19 @@ class Line {
 
 	addLine(sourceLine, lineNumber) {
 		Line.check()
-		lineWithExpandedTabs := Line.expandTabs(sourceLine)
-		Line.sourceLine := Line.stripComment(lineWithExpandedTabs)
+		Line.sourceLine := Line.stripComment(sourceLine)
 		Line.lineNumber := lineNumber
 		Statement.addLine(Line.sourceLine, Line.lineNumber)
 	}
 
 	expandTabs(sourceLine) {
-		return RegExReplace(sourceLine, "\t", " ".repeat(Options.tabSize))
+		static tabs := ""
+		if (tabs == "") {
+			loop % Options.tabSize {
+				tabs .= " "
+			}
+		}
+		return StrReplace(sourceLine, A_Tab, tabs)
 	}
 
 	stripComment(sourceLine) {
@@ -48,9 +53,9 @@ class Line {
 	}
 
 	checkLineTooLong() {
-		lineLength := StrLen(Line.sourceLine)
-		if (lineLength > 80) {
-			writeWarning(Line.lineNumber, lineLength, "W002")
+		expandedLine := Line.expandTabs(Line.sourceLine)
+		if (StrLen(expandedLine) > 80) {
+			writeWarning(Line.lineNumber, StrLen(Line.sourceLine), "W002")
 		}
 	}
 
