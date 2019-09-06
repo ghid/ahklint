@@ -58,9 +58,10 @@ class Statement extends Line {
 
 	checkUnnecessarySplitOfLine() {
 		if (Statement.lines.maxIndex() > 1
-				&& StrLen(Statement.toString()) <= 80)	{
+				&& StrLen(Line.expandTabs(Statement.toString())) <= 80)	{
 			if (!Statement.isLegacyStatement(Statement.lines[1])) {
-				writeWarning(Statement.lineNumber, StrLen(Statement.lines[1])
+				writeWarning(Statement.lineNumber
+						, StrLen(Statement.lines[1])
 						, "W010")
 			}
 		}

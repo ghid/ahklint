@@ -335,6 +335,16 @@ class AHKLintTest extends TestCase {
 		Ansi.flush()
 		this.assertEquals(TestCase.fileContent(A_Temp "\ahklint-test.err"), "")
 	}
+
+	@Test_fixThis_193CF11() {
+		Line.addLine("						print(""#"" ++i "": "" cron_pattern "" "" cron_cmd "": """, 1) ; ahklint-ignore: W002
+		Line.addLine("								. _ex.message)", 2)
+		Line.addLine("						print("""")", 3)
+		Line.check()
+		Ansi.flush()
+		this.assertEquals(TestCase.fileContent(A_Temp "\ahklint-test.err")
+				, "")
+	}
 }
 
 exitapp AHKLintTest.runTests()
