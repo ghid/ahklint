@@ -51,6 +51,7 @@ class AHKLintTest extends TestCase {
 	@Test_isContinousLine() {
 		this.assertTrue(Statement.isContiousLine("   , A_Index"))
 		this.assertFalse(Statement.isContiousLine("   index := 42"))
+		this.assertFalse(Statement.isContiousLine("   ^a:: Send ^{Home}"))
 	}
 
 	@Test_expandTabs() {
@@ -192,7 +193,8 @@ class AHKLintTest extends TestCase {
 		Line.addLine("    if (x == 0", 31)
 		Line.addLine("            && y > 1)", 32)
 		Line.addLine("        x++", 33)
-		Line.addLine("", 34)
+		Line.addLine("    #If GetKeyState(""CapsLock"", ""P"") == 1", 34)
+		Line.addLine("", 35)
 		Statement.check()
 		Ansi.flush()
 		this.assertEquals(TestCase.fileContent(A_Temp "\ahklint-test.err")
