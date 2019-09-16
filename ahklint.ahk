@@ -3,8 +3,8 @@
 ListLines Off
 SetBatchLines -1
 
-#Include <ansi\Ansi>
-#Include <string\String>
+#Include <ansi>
+#Include <string>
 
 #Include %A_LineFile%\..\modules\Line.ahk
 #Include %A_LineFile%\..\modules\Statement.ahk
@@ -80,8 +80,11 @@ isTheMessageToBeIgnored(messageId, lineNumber) {
 }
 
 writeWarning(lineNumber, columnNumber, messageId) {
+	severityLevel := SubStr(messageId, 1, 1) == "E"
+			? "error"
+			: "warning"
 	if (!isTheMessageToBeIgnored(messageId, lineNumber)) {
-		Ansi.stdErr.writeLine(lineNumber "." columnNumber
-				. ": warning: " Message.text[messageId])
+		Ansi.stdErr.writeLine(lineNumber "." columnNumber ": "
+				. severityLevel ": " Message.text[messageId])
 	}
 }

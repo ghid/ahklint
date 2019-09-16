@@ -75,7 +75,7 @@ class Statement extends Line {
 			if (!RegExMatch(sourceLine, "\{\s*?$")) {
 				position := Statement.translatePosition(StrLen(sourceLine))
 				writeWarning(position.lineNumber, position.columnNumber
-						, "W004")
+						, "E001")
 				return false
 			}
 		}
@@ -115,11 +115,12 @@ class Statement extends Line {
 		sourceLine := Statement.toString()
 		lookAt := 1
 		while (foundAt := RegExMatch(sourceLine
-				, "(?P<Before>(?P<New>\b(new\s+).*?)?[\w\)]\.)[A-Z][a-z0-9_$#@]"
+				, "(?P<Before>(?P<New>\b(new\s+).*?)?[\w\)]\.)[A-Z]"
+				. "([a-z]+|[0-9_$#@]+[a-z]+)(?P<dot>\.?)"
 				, match, lookAt)) {
 			atColumn := foundAt + StrLen(matchBefore)
 			lookAt := foundAt + StrLen(match)
-			if (!matchNew) {
+			if (!matchNew && !matchDot) {
 				position := Statement.translatePosition(atColumn)
 				writeWarning(position.lineNumber, position.columnNumber, "W009")
 			}
@@ -153,7 +154,8 @@ class Statement extends Line {
 				, "i)^\s*"
 				. "(If(Not)?(Equal)?"
 				. "|IfLess(OrEqual)?"
-				. "|IfGreater(OrEqual)?)"
+				. "|IfGreater(OrEqual)?"
+				. "|loop(\s+|,\s*)(files|parse|read|reg))"
 				. "(\s+|,\s*)[^\(]")
 	}
 

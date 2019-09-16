@@ -4,8 +4,8 @@ SetBatchLines -1
 ListLines Off
 
 #Include <testcase-libs>
-#Include <flimsydata\FlimsyData>
-#Include <random\Random>
+#Include <flimsydata>
+#Include <random>
 
 class AHKLintTest extends TestCase {
 
@@ -59,8 +59,11 @@ class AHKLintTest extends TestCase {
 	}
 
 	@Test_isLegacyStatment() {
+		; ahklint-ignore-begin: W002
 		this.assertFalse(Statement.isLegacyStatement("    if (x == 1) {"))
 		this.assertFalse(Statement.isLegacyStatement("    if (x == 1)"))
+		this.assertFalse(Statement.isLegacyStatement("    loop x"))
+		this.assertFalse(Statement.isLegacyStatement("    loop %x%"))
 		this.assertTrue(Statement.isLegacyStatement("    If x = 1"))
 		this.assertTrue(Statement.isLegacyStatement("    If x"))
 		this.assertTrue(Statement.isLegacyStatement("    IfEqual x, 1"))
@@ -71,19 +74,25 @@ class AHKLintTest extends TestCase {
 		this.assertTrue(Statement.isLegacyStatement("    IfGreater, x, 1"))
 		this.assertTrue(Statement.isLegacyStatement("    IfGreaterOrEqual x, 1"))
 		this.assertTrue(Statement.isLegacyStatement("    If x between 1 and 5"))
-		this.assertTrue(Statement.isLegacyStatement("    If x not between 1 and 5")) ; ahklint-ignore: W002
+		this.assertTrue(Statement.isLegacyStatement("    If x not between 1 and 5"))
 		this.assertTrue(Statement.isLegacyStatement("    If x in 1,2,3,4,5"))
 		this.assertTrue(Statement.isLegacyStatement("    If x not in 1,2,3,4,5"))
 		this.assertTrue(Statement.isLegacyStatement("    If x contains 1,2"))
 		this.assertTrue(Statement.isLegacyStatement("    If x not contains 1,2"))
 		this.assertTrue(Statement.isLegacyStatement("    If x is integer"))
 		this.assertTrue(Statement.isLegacyStatement("    If x is not integer"))
+		this.assertTrue(Statement.isLegacyStatement("    loop Files, %mydir%"))
+		this.assertTrue(Statement.isLegacyStatement("    loop, Files, %mydir%"))
+		this.assertTrue(Statement.isLegacyStatement("    loop, Parse, content, A_Space"))
+		this.assertTrue(Statement.isLegacyStatement("    Loop, read, C:\Docs\Address List.txt, C:\Docs\Family Addresses.txt"))
+		this.assertTrue(Statement.isLegacyStatement("    Loop, Reg, HKEY_CURRENT_USER\Software\Microsoft\Windows, KVR"))
+		; ahklint-ignore-end
 	}
 
 	@Test_isTheMessageToBeIgnored() {
-		handleIgnoreDirectives("`; ahklint-ignore: W001,W002,W004", 1)
+		handleIgnoreDirectives("`; ahklint-ignore: W001,W002,E001", 1)
 		handleIgnoreDirectives("`; ahklint-ignore: W005", 2)
-		this.assertEquals(Options.rulesToIgnore[1], "W001,W002,W004")
+		this.assertEquals(Options.rulesToIgnore[1], "W001,W002,E001")
 		this.assertTrue(isTheMessageToBeIgnored("W001", 1))
 		this.assertTrue(isTheMessageToBeIgnored("W002", 1))
 	}
@@ -187,10 +196,10 @@ class AHKLintTest extends TestCase {
 		Statement.check()
 		Ansi.flush()
 		this.assertEquals(TestCase.fileContent(A_Temp "\ahklint-test.err")
-				, "11.15: warning: " Message.text["W004"] "`n"
+				, "11.15: error: " Message.text["E001"] "`n"
 				. "21.15: warning: " Message.text["W010"] "`n"
 				. "31.14: warning: " Message.text["W010"] "`n"
-				. "32.21: warning: " Message.text["W004"] "`n")
+				. "32.21: error: " Message.text["E001"] "`n")
 	}
 
 	@Test_checkOpeningTrueBraceWithTabs() {
@@ -206,7 +215,7 @@ class AHKLintTest extends TestCase {
 		Statement.check()
 		Ansi.flush()
 		this.assertEquals(TestCase.fileContent(A_Temp "\ahklint-test.err")
-				, "11.12: warning: " Message.text["W004"] "`n"
+				, "11.12: error: " Message.text["E001"] "`n"
 				. "21.12: warning: " Message.text["W010"] "`n")
 	}
 
@@ -220,14 +229,14 @@ class AHKLintTest extends TestCase {
 		Statement.check()
 		Ansi.flush()
 		this.assertEquals(TestCase.fileContent(A_Temp "\ahklint-test.err")
-				, "1.19: warning: " Message.text["W004"] "`n")
+				, "1.19: error: " Message.text["E001"] "`n")
 	}
 
 	@Test_ahklintIgnore() {
 		Line.addLine("    if (extraOrdinaryFirstVariableName"
 				. "WithALotOfCharacters <> extraOrdinarySecondVariableName"
 				. "WithALotOfCharacters)", 1)
-		handleIgnoreDirectives("`; ahklint-ignore: W002,W005,W004", 1)
+		handleIgnoreDirectives("`; ahklint-ignore: W002,W005,E001", 1)
 		Line.addLine("        x++", 2)
 		Line.check()
 		Ansi.flush()
@@ -304,7 +313,9 @@ class AHKLintTest extends TestCase {
 		Line.addLine("    if (o.Test() == 0", 9)
 		Line.addLine("            || (o.Test() > 10 && o.Test() < 50)", 10)
 		Line.addLine("            || o.Test() < -10) {", 11)
-		Line.addLine("", 12)
+		Line.addLine("    return Test.B1_INST_STME", 12)
+		Line.addLine("    if (_rbhn & Console.Color.COLOR_HIGHLIGHT) {", 13)
+		Line.addLine("", 14)
 		Line.check()
 		Ansi.flush()
 		this.assertEquals(TestCase.fileContent(A_Temp "\ahklint-test.err")
