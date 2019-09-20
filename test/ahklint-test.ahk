@@ -214,6 +214,8 @@ class AHKLintTest extends TestCase {
 		Line.addLine("	{", 22)
 		Line.addLine("		x++", 23)
 		Line.addLine("	}", 24)
+		Line.addLine("  #If GetKeyState(""CapsLock"", ""P"") == 1", 25)
+		Line.addLine("  {", 26)
 		Statement.check()
 		Ansi.flush()
 		this.assertEquals(TestCase.fileContent(A_Temp "\ahklint-test.err")

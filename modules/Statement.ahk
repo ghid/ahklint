@@ -154,7 +154,7 @@ class Statement extends Line {
 	isLegacyStatement(sourceLine) {
 		return RegExMatch(sourceLine
 				, "i)^\s*"
-				. "(If(Not)?(Equal)?"
+				. "(#?If(Not)?(Equal)?"
 				. "|IfLess(OrEqual)?"
 				. "|IfGreater(OrEqual)?"
 				. "|loop(\s+|,\s*)(files|parse|read|reg))"
