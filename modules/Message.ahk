@@ -11,6 +11,6 @@ class Message {
 			. " (W007)"
 			, W008: "Start class names with an uppercase character. (W008)"
 			, W009: "Start method names with lowercase character. (W009)"
-			, W010: "Unnecessary split of a line. (W010)"
+			, I001: "Unnecessary split of a line. (I001)"
 			, E001: "Missing curly brackets. (E001)" }
 }

@@ -80,9 +80,10 @@ isTheMessageToBeIgnored(messageId, lineNumber) {
 }
 
 writeWarning(lineNumber, columnNumber, messageId) {
-	severityLevel := SubStr(messageId, 1, 1) == "E"
-			? "error"
-			: "warning"
+	severityLevel := SubStr(messageId, 1, 1) == "W"
+			? "warning" : SubStr(messageId, 1, 1) == "I"
+			? "info"
+			: "error"
 	if (!isTheMessageToBeIgnored(messageId, lineNumber)) {
 		Ansi.stdErr.writeLine(lineNumber "." columnNumber ": "
 				. severityLevel ": " Message.text[messageId])

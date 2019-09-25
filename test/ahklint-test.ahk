@@ -169,14 +169,14 @@ class AHKLintTest extends TestCase {
 		Statement.check()
 		Ansi.flush()
 		this.assertEquals(TestCase.fileContent(A_Temp "\ahklint-test.err")
-				, "1.14: warning: " Message.text["W010"] "`n"
+				, "1.14: info: " Message.text["I001"] "`n"
 				. "2.4: warning: " Message.text["W003"] "`n"
-				. "11.14: warning: " Message.text["W010"] "`n"
+				. "11.14: info: " Message.text["I001"] "`n"
 				. "12.8: warning: " Message.text["W003"] "`n"
-				. "21.14: warning: " Message.text["W010"] "`n"
-				. "31.14: warning: " Message.text["W010"] "`n"
+				. "21.14: info: " Message.text["I001"] "`n"
+				. "31.14: info: " Message.text["I001"] "`n"
 				. "32.16: warning: " Message.text["W003"] "`n"
-				. "41.14: warning: " Message.text["W010"] "`n"
+				. "41.14: info: " Message.text["I001"] "`n"
 				. "42.11: warning: " Message.text["W003"] "`n")
 	}
 
@@ -199,8 +199,8 @@ class AHKLintTest extends TestCase {
 		Ansi.flush()
 		this.assertEquals(TestCase.fileContent(A_Temp "\ahklint-test.err")
 				, "11.15: error: " Message.text["E001"] "`n"
-				. "21.15: warning: " Message.text["W010"] "`n"
-				. "31.14: warning: " Message.text["W010"] "`n"
+				. "21.15: info: " Message.text["I001"] "`n"
+				. "31.14: info: " Message.text["I001"] "`n"
 				. "32.21: error: " Message.text["E001"] "`n")
 	}
 
@@ -220,7 +220,7 @@ class AHKLintTest extends TestCase {
 		Ansi.flush()
 		this.assertEquals(TestCase.fileContent(A_Temp "\ahklint-test.err")
 				, "11.12: error: " Message.text["E001"] "`n"
-				. "21.12: warning: " Message.text["W010"] "`n")
+				. "21.12: info: " Message.text["I001"] "`n")
 	}
 
 	@Test_traditionalStatements() {
@@ -333,6 +333,16 @@ class AHKLintTest extends TestCase {
 				. "11.18: warning: " Message.text["W009"] "`n")
 	}
 
+	@Test_unnecessarySplit() {
+		Line.addLine("    __new(x=1", 1)
+		Line.addLine("            , y=0) {", 2)
+		Line.addLine("        return x", 3)
+		Line.addLine("    }", 4)
+		Line.check()
+		Ansi.flush()
+		this.assertEquals(TestCase.fileContent(A_Temp "\ahklint-test.err")
+				, "1.13: info: " Message.text["I001"] "`n")
+	}
 
 	@Test_fixThis_20190829() {
 		Line.addLine("FileAppend Test for %A_ScriptFullName%", 1)
