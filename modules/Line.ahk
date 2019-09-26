@@ -48,14 +48,14 @@ class Line {
 	checkLineForTrailingSpaces() {
 		at := RegExMatch(Line.sourceLine, "\s+$")
 		if (at > 0) {
-			writeWarning(Line.lineNumber, at, "W001")
+			writeMessage(Line.lineNumber, at, "W001")
 		}
 	}
 
 	checkLineTooLong() {
 		expandedLine := Line.expandTabs(Line.sourceLine)
 		if (StrLen(expandedLine) > 80) {
-			writeWarning(Line.lineNumber, StrLen(Line.sourceLine), "W002")
+			writeMessage(Line.lineNumber, StrLen(Line.sourceLine), "W002")
 		}
 	}
 
@@ -63,7 +63,7 @@ class Line {
 		loop {
 			at := InStr(Line.sourceLine, "<>",,, A_Index)
 			if (at > 0) {
-				writeWarning(Line.lineNumber, at, "W005")
+				writeMessage(Line.lineNumber, at, "W005")
 			}
 		} until (at == 0)
 	}

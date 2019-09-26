@@ -48,7 +48,7 @@ class Statement extends Line {
 						. "(\{|" furtherIndent ")(\S|$)"
 				if (!RegExMatch(indentationOfFurtherLine
 						, expectedIndentOrCurlyBrace)) {
-					writeWarning(Statement.lineNumber + A_Index
+					writeMessage(Statement.lineNumber + A_Index
 							, StrLen(indentationOfFurtherLine), "W003")
 					numberOfMisindentedLines++
 				}
@@ -61,7 +61,7 @@ class Statement extends Line {
 		if (Statement.lines.maxIndex() > 1
 				&& StrLen(Line.expandTabs(Statement.toString())) <= 80)	{
 			if (!Statement.isLegacyStatement(Statement.lines[1])) {
-				writeWarning(Statement.lineNumber
+				writeMessage(Statement.lineNumber
 						, StrLen(Statement.lines[1])
 						, "I001")
 			}
@@ -76,7 +76,7 @@ class Statement extends Line {
 				, $)) {
 			if (!RegExMatch(sourceLine, "\{\s*?$")) {
 				position := Statement.translatePosition(StrLen(sourceLine))
-				writeWarning(position.lineNumber, position.columnNumber
+				writeMessage(position.lineNumber, position.columnNumber
 						, "E001")
 				return false
 			}
@@ -93,7 +93,7 @@ class Statement extends Line {
 						, assignmentWithSpaces, atColumn)
 				if (atColumn > 0) {
 					position := Statement.translatePosition(atColumn)
-					writeWarning(position.lineNumber, position.columnNumber
+					writeMessage(position.lineNumber, position.columnNumber
 							, "W006")
 					atColumn += StrLen(assignmentWithSpaces)
 				}
@@ -108,7 +108,7 @@ class Statement extends Line {
 				, match)) {
 			if (RegExMatch(matchFirstChar, "[A-Z]")) {
 				position := Statement.translatePosition(StrLen(matchIndent) + 1)
-				writeWarning(position.lineNumber, position.columnNumber, "W007")
+				writeMessage(position.lineNumber, position.columnNumber, "W007")
 			}
 		}
 	}
@@ -124,7 +124,7 @@ class Statement extends Line {
 			lookAt := foundAt + StrLen(match)
 			if (!matchNew && !matchDot) {
 				position := Statement.translatePosition(atColumn)
-				writeWarning(position.lineNumber, position.columnNumber, "W009")
+				writeMessage(position.lineNumber, position.columnNumber, "W009")
 			}
 		}
 	}
@@ -137,7 +137,7 @@ class Statement extends Line {
 				, match)) {
 			if (RegExMatch(matchFirstChar, "[a-z]")) {
 				position := Statement.translatePosition(StrLen(matchIndent) + 1)
-				writeWarning(position.lineNumber, position.columnNumber, "W008")
+				writeMessage(position.lineNumber, position.columnNumber, "W008")
 			}
 		}
 		if (RegExMatch(sourceLine
@@ -146,7 +146,7 @@ class Statement extends Line {
 				, match)) {
 			if (RegExMatch(matchFirstChar, "[a-z]")) {
 				position := Statement.translatePosition(StrLen(matchIndent) + 1)
-				writeWarning(position.lineNumber, position.columnNumber, "W008")
+				writeMessage(position.lineNumber, position.columnNumber, "W008")
 			}
 		}
 	}

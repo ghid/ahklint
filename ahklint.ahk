@@ -79,7 +79,7 @@ isTheMessageToBeIgnored(messageId, lineNumber) {
 			, "(^|,)" messageId "(,|$)")
 }
 
-writeWarning(lineNumber, columnNumber, messageId) {
+writeMessage(lineNumber, columnNumber, messageId) {
 	severityLevel := SubStr(messageId, 1, 1) == "W"
 			? "warning" : SubStr(messageId, 1, 1) == "I"
 			? "info"
