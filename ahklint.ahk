@@ -19,9 +19,9 @@ class Options {
 
 Main:
 	try {
-		f := Ansi.stdIn
-		while (!f.atEOF) {
-			sourceLine := RegExReplace(f.readLine(), "[`r`n]+$", "")
+		sourceLines := StrSplit(Ansi.stdIn.read(), "`n", "`r")
+		loop % sourceLines.maxIndex() {
+			sourceLine := sourceLines[A_Index]
 			if (!isWithinCommentBlock(sourceLine)) {
 				Line.addLine(sourceLine, A_Index)
 			}
@@ -33,7 +33,6 @@ Main:
 		Line.check()
 		Statement.check()
 		Ansi.flush()
-		f.close()
 	}
 exitapp
 

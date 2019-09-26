@@ -46,16 +46,21 @@ class Line {
 	}
 
 	checkLineForTrailingSpaces() {
-		at := RegExMatch(Line.sourceLine, "\s+$")
-		if (at > 0) {
+		if (SubStr(Line.sourceLine, 0) == " ") {
+			at := RegExMatch(Line.sourceLine, "\s+$")
 			writeMessage(Line.lineNumber, at, "W001")
 		}
 	}
 
 	checkLineTooLong() {
+		lineLength := StrLen(Line.sourceLine)
+		if (StrLen(Line.sourceLine) > 80) {
+			writeMessage(Line.lineNumber, lineLength, "W002")
+			return
+		}
 		expandedLine := Line.expandTabs(Line.sourceLine)
 		if (StrLen(expandedLine) > 80) {
-			writeMessage(Line.lineNumber, StrLen(Line.sourceLine), "W002")
+			writeMessage(Line.lineNumber, lineLength, "W002")
 		}
 	}
 
