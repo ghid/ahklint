@@ -72,7 +72,8 @@ class Statement extends Line {
 		sourceLine := Statement.toString()
 		if (RegExMatch(sourceLine
 				, "i)\s*(\}\s*)?"
-				. "[^#]\b(if|while|loop|for|else|try|catch|finally)\b"
+				. "[^#]\b((?<!hotkey |hotkey, )if|"
+				. "while|loop|for|else|try|catch|finally)\b"
 				, $)) {
 			if (!RegExMatch(sourceLine, "\{\s*?$")) {
 				position := Statement.translatePosition(StrLen(sourceLine))
