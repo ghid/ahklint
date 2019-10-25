@@ -118,12 +118,12 @@ class Statement extends Line {
 		sourceLine := Statement.toString()
 		lookAt := 1
 		while (foundAt := RegExMatch(sourceLine
-				, "(?P<Before>(?P<New>\b(new\s+).*?)?[\w\)]\.)[A-Z]"
-				. "([a-z]+|[0-9_$#@]+[a-z]+)(?P<dot>\.?)"
+				, "(?P<Before>(?P<New>\b(new\s+).*?)?[\w\)]\.)"
+				. "[A-Z][a-zA-Z0-9_$#@]+\("
 				, match, lookAt)) {
 			atColumn := foundAt + StrLen(matchBefore)
 			lookAt := foundAt + StrLen(match)
-			if (!matchNew && !matchDot) {
+			if (!matchNew) {
 				position := Statement.translatePosition(atColumn)
 				writeMessage(position.lineNumber, position.columnNumber, "W009")
 			}

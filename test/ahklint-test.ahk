@@ -323,18 +323,18 @@ class AHKLintTest extends TestCase {
 		Line.addLine("            || o.Test() < -10) {", 11)
 		Line.addLine("    return Test.B1_INST_STME", 12)
 		Line.addLine("    if (_rbhn & Console.Color.COLOR_HIGHLIGHT) {", 13)
-		Line.addLine("", 14)
+		Line.addLine("    Arrays.VennData.setB := setB.Clone()", 14)
+		Line.addLine("", 15)
 		Line.check()
 		Ansi.flush()
 		this.assertEquals(TestCase.fileContent(A_Temp "\ahklint-test.err")
-				, "2.35: warning: " Message.text["W009"] "`n"
-				. "5.10: warning: " Message.text["W009"] "`n"
-				. "5.35: warning: " Message.text["W009"] "`n"
+				, "5.10: warning: " Message.text["W009"] "`n"
 				. "7.28: warning: " Message.text["W009"] "`n"
 				. "9.11: warning: " Message.text["W009"] "`n"
 				. "10.19: warning: " Message.text["W009"] "`n"
 				. "10.36: warning: " Message.text["W009"] "`n"
-				. "11.18: warning: " Message.text["W009"] "`n")
+				. "11.18: warning: " Message.text["W009"] "`n"
+				. "14.34: warning: " Message.text["W009"] "`n")
 	}
 
 	@Test_unnecessarySplit() {
