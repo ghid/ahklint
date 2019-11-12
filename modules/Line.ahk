@@ -22,7 +22,7 @@ class Line {
 
 	stripComment(sourceLine) {
 		stringWithMaskedQuotes := Line.maskQuotedText(sourceLine)
-		commentAt := RegExMatch(stringWithMaskedQuotes, "\s+?`;.*$")
+		commentAt := RegExMatch(stringWithMaskedQuotes, "(^|\s+?)`;.*$")
 		if (commentAt > 0) {
 			sourceLineWithoutComment := SubStr(stringWithMaskedQuotes
 					, 1, commentAt - 1)
